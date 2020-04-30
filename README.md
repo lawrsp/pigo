@@ -51,7 +51,7 @@ type B struct {
 
 ```
 
-this will create a file gen_setters.go and generate codes:
+run `go generate` , it will create a file gen_setters.go (--output) and generate codes:
 
 ```golang
 func (t *A) Update(target *B) (map[string]interface{}, map[string]interface{}) {
