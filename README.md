@@ -40,16 +40,17 @@ pigo help xxxx
 //go:generate pigo setter --type A --target B --tagname setter --name Set --withmap --checkdiff --withold --output gen_setters.go $GOFILE
 
 type A struct {
-   Foo int `"setter:DiffName"`
+   Foo int `"setter:Bar"`
    SameName string
 }
 
 type B struct {
-   Bar int `"setter:DiffName"`
+   Bar int 
    SameName string
 }
 
 ```
+
 this will create a file gen_setters.go and generate codes:
 
 ```golang
@@ -60,9 +61,9 @@ func (t *A) Update(target *B) (map[string]interface{}, map[string]interface{}) {
   old := map[string]interface{}{}
   updated := map[string]interface{}{}
   if t.Foo != target.Bar {
-    old["DiffName"] = target.Bar
+    old["Bar"] = target.Bar
     target.Bar = t.Foo
-    updated["DiffName"] = target.Bar
+    updated["Bar"] = target.Bar
   }
   if t.SameName != target.SameName {
     old["SameName"] = target.SameName
