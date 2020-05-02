@@ -40,7 +40,7 @@ pigo help xxxx
 //go:generate pigo setter --type A --target B --tagname setter --name Set --withmap --checkdiff --withold --output gen_setters.go $GOFILE
 
 type A struct {
-   Foo int `"setter:Bar"`
+   Foo int `setter:"Bar"`
    SameName string
 }
 
