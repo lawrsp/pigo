@@ -4,19 +4,18 @@ import (
 	"log"
 	"os"
 
-	"github.com/lawrsp/pigo/cmd/generators/checker"
-	"github.com/lawrsp/pigo/cmd/generators/convert"
-	"github.com/lawrsp/pigo/cmd/generators/evalid"
-	"github.com/lawrsp/pigo/cmd/generators/genrpc"
-	"github.com/lawrsp/pigo/cmd/generators/jsonfield"
-	"github.com/lawrsp/pigo/cmd/generators/pfilter"
-	"github.com/lawrsp/pigo/cmd/generators/setdb"
-	"github.com/lawrsp/pigo/cmd/generators/setter"
+	"github.com/lawrsp/pigo/generators/checker"
+	"github.com/lawrsp/pigo/generators/convert"
+	"github.com/lawrsp/pigo/generators/evalid"
+	"github.com/lawrsp/pigo/generators/genrpc"
+	"github.com/lawrsp/pigo/generators/jsonfield"
+	"github.com/lawrsp/pigo/generators/pfilter"
+	"github.com/lawrsp/pigo/generators/setdb"
+	"github.com/lawrsp/pigo/generators/setter"
 	"github.com/urfave/cli"
 )
 
 var version = "0.1.0"
-var tagName = "pconvert"
 
 func main() {
 
