@@ -1,5 +1,6 @@
 # pigo
 some go generate tools
+[![Go Reference](https://pkg.go.dev/badge/github.com/lawrsp/pigo.svg)](https://pkg.go.dev/github.com/lawrsp/pigo)
 
 # what is
 
