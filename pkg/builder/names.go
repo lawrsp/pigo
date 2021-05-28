@@ -20,10 +20,10 @@ func CamelString(src string) string {
 		if i == 0 && d >= 'A' && d <= 'Z' {
 			d = d + 32
 		}
-		if k == false && d >= 'A' && d <= 'Z' {
+		if !k && d >= 'A' && d <= 'Z' {
 			k = true
 		}
-		if d >= 'a' && d <= 'z' && (j || k == false) {
+		if d >= 'a' && d <= 'z' && (j || !k) {
 			d = d - 32
 			j = false
 			k = true

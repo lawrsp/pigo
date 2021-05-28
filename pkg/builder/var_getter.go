@@ -46,7 +46,7 @@ func (getter *CreateVarGetter) Getted() *VariableList {
 func (getter *CreateVarGetter) Get(i int, t parser.Type) *Variable {
 	v := NewVariable(t).AutoName().WithMode(getter.mode)
 	// log.Printf("new write only variable: %s", v.Name())
-	for getter.exists.Check(v.Name()) == true || getter.NewVars.Add(v) != true {
+	for getter.exists.Check(v.Name()) || !getter.NewVars.Add(v) {
 		v.IncreaseName()
 	}
 	return v

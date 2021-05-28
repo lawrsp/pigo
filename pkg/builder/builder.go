@@ -172,7 +172,6 @@ func (b *FileBuilder) AddImport(name, path string) {
 		Specs: []ast.Spec{importSpec},
 	}
 	b.file.Decls = append([]ast.Decl{gen}, b.file.Decls...)
-	return
 }
 
 func getType(e ast.Expr) (int, string) {
@@ -362,7 +361,7 @@ func NewFunction(outer Builder, receiver parser.Type, fnt parser.Type, ew ErrorW
 			v = NewVariable(receiver).AutoName().ReadOnly()
 		}
 
-		for allVars.Check(v.Name()) == true || base.variables.Add(v) != true {
+		for allVars.Check(v.Name()) || !base.variables.Add(v) {
 			v.IncreaseName()
 		}
 		v.isVisible = true
@@ -385,7 +384,7 @@ func NewFunction(outer Builder, receiver parser.Type, fnt parser.Type, ew ErrorW
 			// log.Printf("params %d type: %s", i, t)
 			// _, t := pkg.ReduceType(underFnt.Params[i].Type.Expr())
 			v := NewVariable(field.Type).WithName(field.FieldName()).AutoName().ReadOnly()
-			for allVars.Check(v.Name()) == true || base.variables.Add(v) != true {
+			for allVars.Check(v.Name()) || !base.variables.Add(v) {
 				v.IncreaseName()
 			}
 			v.isVisible = true

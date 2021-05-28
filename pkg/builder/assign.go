@@ -79,7 +79,7 @@ func (b *StructAssignBuilder) TryAssign(srcV, dstV *Variable) bool {
 		} else {
 			dstStHolderV = NewVariable(dstStHolderType).WithName(dstV.Name()).WriteOnly()
 		}
-		if dstStHolderV.IsVisible() == false {
+		if !dstStHolderV.IsVisible() {
 			var valueExpr ast.Expr
 			if holder, ok := dstStHolderType.Underlying().(*parser.PointerType); ok {
 				if x := parser.NotNilPointerValue(holder, b.File()); x != nil {
@@ -300,7 +300,7 @@ func (b *StructSetterBuilder) TryAssign(srcV, dstV *Variable) bool {
 		} else {
 			dstStHolderV = NewVariable(dstStHolderType).WithName(dstV.Name()).WriteOnly()
 		}
-		if dstStHolderV.IsVisible() == false {
+		if !dstStHolderV.IsVisible() {
 			var valueExpr ast.Expr = parser.TypeInitValue(dstStHolderType, b.File())
 			// if holder, ok := dstStHolderType.Underlying().(*parser.PointerType); ok {
 			// if x := parser.NotNilPointerValue(holder, b.File()); x != nil {

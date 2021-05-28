@@ -126,7 +126,6 @@ func AddCheckReturn(b Builder, cond ast.Expr, ev *Variable) {
 	}
 	AddReturnStmt(builder, vl)
 	b.Block().Add(builder)
-	return
 }
 
 //use exists variable assign to var
@@ -150,7 +149,7 @@ func AddVariableDecl(b Builder, v *Variable) *Variable {
 	file := b.File()
 	block := b.Block()
 	vl := getAllVariables(block)
-	for vl.Check(v.Name()) == true {
+	for vl.Check(v.Name()) {
 		v.IncreaseName()
 	}
 
@@ -195,7 +194,7 @@ func AddVariableAssign(b Builder, v *Variable, value ast.Expr) *Variable {
 			// log.Printf("assign: %s", v.Type)
 			// variables.debug()
 			//new variable can assign a value or make ge declaration
-			for variables.Check(v.Name()) || block.addVariable(v) != true {
+			for variables.Check(v.Name()) || !block.addVariable(v) {
 				v.IncreaseName()
 			}
 
