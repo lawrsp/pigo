@@ -147,16 +147,16 @@ func (g *Generator) Run() {
 
 	bd := builder.NewFuncBuffer(file, name)
 	bd.Printf("func %s(t %s) bool {\n", name, g.Type)
-	bd.Printf("  switch t {\n")
+	bd.Printf("\tswitch t {\n")
 
 	groupNames := groupNames(g.NamesWithPos)
 	for _, group := range groupNames {
-		bd.Printf("    case %s:\n", strings.Join(group, ","))
+		bd.Printf("\t\tcase %s:\n", strings.Join(group, ","))
+		bd.Printf("\t\t\treturn true\n")
 	}
-	bd.Printf("    default:\n")
-	bd.Printf("    return false\n")
-	bd.Printf("  }\n")
-	bd.Printf("  return true\n")
+	bd.Printf("\t\tdefault:\n")
+	bd.Printf("\t\t\treturn false\n")
+	bd.Printf("\t}\n")
 	bd.Printf("}\n")
 
 	file.Add(bd)
