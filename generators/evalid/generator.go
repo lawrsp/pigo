@@ -157,6 +157,9 @@ func (g *Generator) Run() {
 	bd.Printf("\t\tdefault:\n")
 	bd.Printf("\t\t\treturn false\n")
 	bd.Printf("\t}\n")
+	if len(groupNames) == 0 {
+		bd.Printf("\treturn true\n")
+	}
 	bd.Printf("}\n")
 
 	file.Add(bd)
