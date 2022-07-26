@@ -36,6 +36,7 @@ type CheckerInfo struct {
 	chk        string
 	name       string
 	expr       string
+	fullExpr   string
 	targetType parser.Type
 	file       *parser.File
 }
@@ -47,8 +48,9 @@ func (c *CheckerInfo) Copy() *CheckerInfo {
 }
 
 type Checker struct {
-	c     *CheckerInfo
-	p     builder.Printer
+	c *CheckerInfo
+	p builder.Printer
+
 	index int
 	procs []CheckerProc
 }
@@ -59,51 +61,34 @@ func NewChecker(c *CheckerInfo, p builder.Printer, tagSrc string) *Checker {
 	confs := strings.Split(tagSrc, ";")
 
 	for _, cf := range confs {
-		kv := strings.Split(cf, ":")
-		switch kv[0] {
+		vs := strings.Split(cf, ":")
+		switch vs[0] {
 		case "noempty":
-			proc := &NoEmptyProc{}
-			if len(kv) > 1 {
-				proc.emptyVal = kv[1]
-			}
+			proc := NewNoEmptyProc(vs)
 			cc.procs = append(cc.procs, proc)
 		case "isvalid":
-			proc := &IsValidProc{}
-			proc.call = kv[1]
+			proc := NewIsValidProc(vs)
 			cc.procs = append(cc.procs, proc)
 		case "stars":
-			proc := &StarProc{}
-			proc.stars = getInt(kv[1])
+			proc := NewStarProc(vs)
 			cc.procs = append(cc.procs, proc)
 		case "default":
-			s := strings.Replace(kv[1], "'", "\"", -1)
-			proc := &DefaultValueProc{}
-			proc.defaultValue = s
+			proc := NewDefaultValueProc(vs)
 			cc.procs = append(cc.procs, proc)
 		case "arrays":
-			proc := &ArrayProc{}
-			proc.arrays = getInt(kv[1])
+			proc := NewArrayProc(vs)
 			cc.procs = append(cc.procs, proc)
 		case "call":
-			proc := &CallProc{}
-			proc.call = kv[1]
-			proc.result = kv[2]
+			proc := NewCallProc(vs)
 			cc.procs = append(cc.procs, proc)
 		case "compare":
-			proc := &CompareProc{}
-			proc.operand = kv[1]
-			proc.value = kv[2]
+			proc := NewCompareProc(vs)
 			cc.procs = append(cc.procs, proc)
 		case "merge":
-			proc := &MergeProc{}
-			proc.method = kv[1]
+			proc := NewMergeProc(vs)
 			cc.procs = append(cc.procs, proc)
 		case "convert":
-			proc := &ConvertProc{}
-			proc.convertTo = kv[1]
-			if len(kv) >= 3 {
-				proc.convertName = kv[2]
-			}
+			proc := NewConvertProc(vs)
 			cc.procs = append(cc.procs, proc)
 		}
 	}
@@ -123,39 +108,121 @@ type CheckerProc interface {
 	Print(cm *Checker)
 }
 
+type baseCheckerProc struct {
+	ErrType  string
+	Messages []string
+}
+
 type NoEmptyProc struct {
+	baseCheckerProc
 	emptyVal string
+}
+
+// noemtpy:emptyValue:CustomType:msgA:msgB:msgC...
+func NewNoEmptyProc(vs []string) CheckerProc {
+	p := &NoEmptyProc{}
+	p.ErrType = "\"IsEmpty\""
+
+	if len(vs) > 1 {
+		p.emptyVal = strings.Replace(vs[1], "'", "\"", -1)
+	}
+
+	if len(vs) > 2 && vs[2] != "" {
+		p.ErrType = vs[2]
+	}
+
+	if len(vs) > 3 {
+		p.Messages = vs[3:]
+	}
+
+	return p
 }
 
 func (proc *NoEmptyProc) Print(cm *Checker) {
 	p := cm.p
 	c := cm.c
 
+	p.Printf("%s.Assert(", c.chk)
+
 	if _, ok := c.targetType.(*parser.ArrayType); ok {
-		p.Printf("%s.Assert(len(%s) != 0, %s, \"should not be empty\")\n", c.chk, c.expr, c.name)
+		p.Printf("len(%s) != 0", c.expr)
 	} else if proc.emptyVal != "" {
-		p.Printf("%s.Assert(%s != %s, %s, \"should not be empty\")\n", c.chk, c.expr, proc.emptyVal, c.name)
+		p.Printf("%s != %s", c.expr, proc.emptyVal)
 	} else {
 		emptyValueExpr := parser.TypeZeroValue(c.targetType, c.file)
 		emptyValue := getEmptyValueString(emptyValueExpr)
-		p.Printf("%s.Assert(%s != %s, %s, \"should not be empty\")\n", c.chk, c.expr, emptyValue, c.name)
+		p.Printf("%s != %s", c.expr, emptyValue)
 	}
+	p.Printf(", %s, %s", c.name, proc.ErrType)
+	for _, msg := range proc.Messages {
+		if msg != "" {
+			p.Printf(", \"%s\"", msg)
+		}
+	}
+	p.Printf(")\n")
 }
 
 type IsValidProc struct {
+	baseCheckerProc
 	call string
+}
+
+// isvalid:valid-function:CustomType:MsgA:MsgB....
+func NewIsValidProc(vs []string) CheckerProc {
+	p := &IsValidProc{}
+	p.ErrType = "\"Invalid\""
+	p.call = vs[1]
+
+	if len(vs) > 2 && vs[2] != "" {
+		p.ErrType = vs[2]
+	}
+
+	if len(vs) > 3 {
+		p.Messages = vs[3:]
+	}
+
+	return p
 }
 
 func (cp *IsValidProc) Print(cm *Checker) {
 	p := cm.p
 	c := cm.c
 
-	p.Printf("%s.Assert(%s(%s), %s, \"invalid\" )\n", c.chk, cp.call, c.expr, c.name)
+	p.Printf("%s.Assert(%s(%s), %s, %s", c.chk, cp.call, c.expr, c.name, cp.ErrType)
+
+	for _, msg := range cp.Messages {
+		if msg != "" {
+			p.Printf(", \"%s\"", msg)
+		}
+	}
+	p.Printf(")\n")
+
 }
 
 type CallProc struct {
+	baseCheckerProc
 	call   string
 	result string
+}
+
+// call:some-function:error/bool/true/false:CustomType:MsgA:MsgB:....
+func NewCallProc(vs []string) CheckerProc {
+	proc := &CallProc{}
+	proc.call = vs[1]
+	proc.result = "error"
+	if len(vs) > 2 && vs[2] != "" {
+		proc.result = vs[2]
+	}
+	proc.ErrType = "\"Invalid\""
+	if len(vs) > 3 && vs[3] != "" {
+		proc.ErrType = vs[3]
+	}
+
+	if len(vs) > 4 {
+		proc.Messages = vs[4:]
+	}
+
+	return proc
 }
 
 func (cp *CallProc) Print(cm *Checker) {
@@ -167,32 +234,75 @@ func (cp *CallProc) Print(cm *Checker) {
 		expr = expr[1:]
 	}
 
-	if cp.result == "bool" || cp.result == "true" || cp.result == "" {
-		p.Printf("%s.Assert(%s.%s(), %s, \"invalid\" )\n", c.chk, expr, cp.call, c.name)
+	if cp.result == "error" || cp.result == "" {
+		p.Printf("%s.AssertError(%s.%s(), %s, %s", c.chk, expr, cp.call, c.name, cp.ErrType)
+	} else if cp.result == "bool" || cp.result == "true" {
+		p.Printf("%s.Assert(%s.%s(), %s, %s", c.chk, expr, cp.call, c.name, cp.ErrType)
 	} else if cp.result == "false" {
-		p.Printf("%s.Assert(!%s.%s(), %s, \"invalid\" )\n", c.chk, expr, cp.call, c.name)
-	} else if cp.result == "error" {
-		p.Printf("%s.AssertError(%s.%s(), %s, \"invalid\"  )\n", c.chk, expr, cp.call, c.name)
+		p.Printf("%s.Assert(!%s.%s(), %s, %s", c.chk, expr, cp.call, c.name, cp.ErrType)
 	} else {
 		log.Fatalf("cannot generate call checker %s:", cp.call)
 	}
 
+	for _, msg := range cp.Messages {
+		if msg != "" {
+			p.Printf(", \"%s\"", msg)
+		}
+	}
+
+	p.Printf(")\n")
 }
 
 type CompareProc struct {
+	baseCheckerProc
 	operand string
 	value   string
+}
+
+// compare:!=><:value:CustomType:MsgA:MsgB...
+func NewCompareProc(vs []string) CheckerProc {
+	proc := &CompareProc{}
+	proc.operand = vs[1]
+	proc.value = strings.Replace(vs[2], "'", "\"", -1)
+	proc.ErrType = "\"Invalid\""
+
+	if len(vs) > 3 && vs[3] != "" {
+		proc.ErrType = vs[3]
+	}
+
+	if len(vs) > 4 {
+		proc.Messages = vs[4:]
+	}
+
+	return proc
 }
 
 func (cp *CompareProc) Print(cm *Checker) {
 	p := cm.p
 	c := cm.c
 
-	p.Printf("%s.Assert(%s %s %s, %s, \"invalid\" )\n", c.chk, c.expr, cp.operand, cp.value, c.name)
+	p.Printf("%s.Assert(%s %s %s, %s, %s", c.chk, c.expr, cp.operand, cp.value, c.name, cp.ErrType)
+
+	for _, msg := range cp.Messages {
+		if msg != "" {
+			p.Printf(", \"%s\"", msg)
+		}
+	}
+
+	p.Printf(")\n")
 }
 
 type DefaultValueProc struct {
 	defaultValue string
+}
+
+// default:somevalue
+// default:'stringvalue'
+func NewDefaultValueProc(vs []string) CheckerProc {
+	proc := &DefaultValueProc{}
+	s := strings.Replace(vs[1], "'", "\"", -1)
+	proc.defaultValue = s
+	return proc
 }
 
 func (cp *DefaultValueProc) Print(cm *Checker) {
@@ -202,11 +312,23 @@ func (cp *DefaultValueProc) Print(cm *Checker) {
 	emptyValueExpr := parser.TypeZeroValue(c.targetType, c.file)
 	emptyValue := getEmptyValueString(emptyValueExpr)
 
-	p.Printf("if %s == %s {\n  %s = %s  }\n", c.expr, emptyValue, c.expr, cp.defaultValue)
+	if c.fullExpr != "" {
+		p.Printf("if %s == %s {\n%s = %s\n}\n", c.expr, emptyValue, c.fullExpr, cp.defaultValue)
+	} else {
+		p.Printf("if %s == %s {\n%s = %s\n}\n", c.expr, emptyValue, c.expr, cp.defaultValue)
+	}
+
 }
 
 type MergeProc struct {
 	method string
+}
+
+// merge:other-valid-function
+func NewMergeProc(vs []string) CheckerProc {
+	proc := &MergeProc{}
+	proc.method = vs[1]
+	return proc
 }
 
 func (cp *MergeProc) Print(cm *Checker) {
@@ -223,6 +345,13 @@ type ArrayProc struct {
 	arrays int
 }
 
+// arrays:123
+func NewArrayProc(vs []string) CheckerProc {
+	proc := &ArrayProc{}
+	proc.arrays = getInt(vs[1])
+	return proc
+}
+
 func (cp *ArrayProc) Print(cm *Checker) {
 	if cp.arrays == 0 {
 		return
@@ -232,21 +361,31 @@ func (cp *ArrayProc) Print(cm *Checker) {
 	c := cm.c
 
 	expr := c.expr
+	fullExpr := expr
 	it := "i"
+	idx := ""
 
 	for i := 0; i < cp.arrays; i++ {
 		it += "t"
-		p.Printf("for i, %s := range %s {\n", it, expr)
+		idx += "i"
+		fullExpr = fmt.Sprintf("%s[%s]", expr, idx)
+		p.Printf("for %s, %s := range %s {\n", idx, it, expr)
+		expr = it
 	}
 
 	nc := c.Copy()
 	nc.expr = it
-	theName, err := strconv.Unquote(c.name)
-	if err != nil {
-		log.Fatalf("unquote %s failed: %v", c.name, err)
+	theName := c.name
+	if theName[0] == '"' {
+		var err error
+		theName, err = strconv.Unquote(theName)
+		if err != nil {
+			log.Fatalf("unquote %s failed: %v", c.name, err)
+		}
 	}
-	nc.name = "fmt.Sprintf(\"" + theName + ".%d\", i)"
+	nc.name = "fmt.Sprintf(\"" + theName + ".%d\", " + idx + ")"
 	nc.targetType = parser.TypeSkipBracket(c.targetType, cp.arrays)
+	nc.fullExpr = fullExpr
 	cm.c = nc
 	cm.Next()
 
@@ -258,6 +397,18 @@ func (cp *ArrayProc) Print(cm *Checker) {
 type ConvertProc struct {
 	convertTo   string
 	convertName string
+}
+
+// convert:convert-to-type:custom-new-name
+func NewConvertProc(vs []string) CheckerProc {
+
+	proc := &ConvertProc{}
+	proc.convertTo = vs[1]
+	if len(vs) > 2 {
+		proc.convertName = vs[2]
+	}
+
+	return proc
 }
 
 func (cp *ConvertProc) Print(cm *Checker) {
@@ -285,6 +436,13 @@ func (cp *ConvertProc) Print(cm *Checker) {
 
 type StarProc struct {
 	stars int
+}
+
+// stars:123
+func NewStarProc(vs []string) CheckerProc {
+	p := &StarProc{}
+	p.stars = getInt(vs[1])
+	return p
 }
 
 func (cp *StarProc) Print(cm *Checker) {
@@ -406,7 +564,7 @@ func (g *Generator) Run(c *Config) {
 	bd.Printf("  return chk.GetError()\n")
 	bd.Printf("}\n")
 
-	log.Printf(string(bd.Bytes()))
+	log.Println(string(bd.Bytes()))
 	file.Add(bd)
 }
 

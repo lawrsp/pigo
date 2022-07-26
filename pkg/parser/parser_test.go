@@ -12,8 +12,9 @@ import (
 )
 
 func expect(logger func(string, ...interface{}), a interface{}, b interface{}) {
+	_, _, line, _ := runtime.Caller(1)
 	if !reflect.DeepEqual(b, a) {
-		logger("Expected %#v (type %v) - Got %#v (type %v)", b, reflect.TypeOf(b), a, reflect.TypeOf(a))
+		logger("%d: Expected %#v (type %v) - Got %#v (type %v)", line, b, reflect.TypeOf(b), a, reflect.TypeOf(a))
 	}
 }
 
@@ -198,14 +199,30 @@ import "go/ast"
 	expect(t.Errorf, typ.String(), "*token.FileSet")
 
 	src = "Parser.ImportScope"
-	fmt.Printf("parse: %s\n", src)
 	expr, err = ParseExpr(src)
 	expect(t.Errorf, err, nil)
 	typ = file.ReduceType(expr)
+	fmt.Printf("parse: %s => %s\n", src, typ.String())
 	fmt.Println(typ.String())
 	expect(t.Errorf, typ.File() != nil, true)
 	expect(t.Errorf, typ.File().Name != "", true)
 	expect(t.Errorf, typ.String(), "parser.ImportScope(*parser.Parser,string,string)(string,*parser.Scope)")
+
+	src = "[]int"
+	expr, err = ParseExpr(src)
+	expect(t.Errorf, err, nil)
+	typ = file.ReduceType(expr)
+	fmt.Printf("parse: %s => %s\n", src, typ.String())
+	expect(t.Errorf, typ.File() == nil, true)
+	expect(t.Errorf, typ.String(), "[]int")
+
+	src = "[][]string"
+	expr, err = ParseExpr(src)
+	expect(t.Errorf, err, nil)
+	typ = file.ReduceType(expr)
+	fmt.Printf("parse: %s => %s\n", src, typ.String())
+	expect(t.Errorf, typ.File() == nil, true)
+	expect(t.Errorf, typ.String(), "[][]string")
 
 	src = "[]Parser"
 	fmt.Printf("parse: %s\n", src)
@@ -223,12 +240,12 @@ import "go/ast"
 	expect(t.Errorf, typ.File() != nil, true)
 	expect(t.Errorf, typ.String(), "[]*parser.Parser")
 
-	src = "printutil.IncreaseName(\"abc\")"
-	fmt.Printf("parse: %s\n", src)
-	expr, err = ParseExpr(src)
-	expect(t.Errorf, err, nil)
-	typ = file.ReduceType(expr)
-	expect(t.Errorf, typ.String(), "string")
+	// src = "printutil.IncreaseName(\"abc\")"
+	// fmt.Printf("parse: %s\n", src)
+	// expr, err = ParseExpr(src)
+	// expect(t.Errorf, err, nil)
+	// typ = file.ReduceType(expr)
+	// expect(t.Errorf, typ.String(), "string")
 
 	src = "strings.Split(\"abc\", \".\")[2]"
 	fmt.Printf("parse: %s\n", src)
@@ -281,13 +298,13 @@ import "go/ast"
 	assert(t, typ.File() != nil, "%s.File() != nil", typ)
 	expect(t.Errorf, typ.String(), "ast.Lookup(*ast.Scope,string)*ast.Object")
 
-	src = "builder.Builder.Variables"
-	fmt.Printf("parse: %s\n", src)
-	expr, err = ParseExpr(src)
-	expect(t.Errorf, err, nil)
-	typ = file.ReduceType(expr)
-	assert(t, typ.File() == nil, "%s.File() == nil", typ)
-	expect(t.Errorf, typ.String(), "Variables()*builder.VariableList")
+	// src = "builder.Builder.Variables"
+	// fmt.Printf("parse: %s\n", src)
+	// expr, err = ParseExpr(src)
+	// expect(t.Errorf, err, nil)
+	// typ = file.ReduceType(expr)
+	// assert(t, typ.File() == nil, "%s.File() == nil", typ)
+	// expect(t.Errorf, typ.String(), "Variables()*builder.VariableList")
 
 }
 

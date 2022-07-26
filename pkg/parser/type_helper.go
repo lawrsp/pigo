@@ -12,6 +12,8 @@ import (
 
 func NewType(name string) Type {
 	switch name {
+	case "int", "uint", "float":
+		fallthrough
 	case "uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64":
 		fallthrough
 	case "float32", "float64":
