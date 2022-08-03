@@ -141,7 +141,7 @@ func (b *FileBuilder) AddImport(name, path string) {
 
 		if oldName == name {
 			if oldPath != path {
-				log.Fatalf("cannot add import with same name and different path")
+				log.Fatalf("cannot add import %s with same name and different path:\n%s\n%s ", name, oldPath, path)
 			}
 			return
 		}
