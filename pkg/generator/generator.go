@@ -67,7 +67,7 @@ func (g *Generator) GetExprString(expr ast.Expr) string {
 		log.Fatalf("generate code error: %v", err)
 	}
 
-	return string(buf.Bytes())
+	return buf.String()
 }
 
 func (g *Generator) GetExprValueString(expr ast.Expr) string {
@@ -113,8 +113,7 @@ func (g *Generator) PrepareParser() {
 }
 func (g *Generator) PreparePackage(dir string, output string) {
 	p := g.Parser
-	var pkg *parser.Package
-	pkg = p.ParsePackageDir(dir)
+	pkg := p.ParsePackageDir(dir)
 
 	var file *parser.File
 
@@ -175,7 +174,7 @@ func (g *Generator) Prepare(dir string, files []string, output string) {
 
 func (g *Generator) PrepareImports(imports map[string]string) {
 	bd := builder.NewFile(nil, g.File)
-	if imports != nil && len(imports) > 0 {
+	if len(imports) > 0 {
 		for name, path := range imports {
 			bd.AddImport(name, path)
 		}
@@ -244,7 +243,7 @@ func (g *Generator) Output(output string) {
 
 	// Write to stdout / file
 	if len(output) == 0 {
-		fmt.Printf(string(result))
+		fmt.Println(string(result))
 	} else {
 		err = ioutil.WriteFile(output, result, 0644)
 		if err != nil {
