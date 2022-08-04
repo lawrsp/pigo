@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lawrsp/pigo/pkg/builder"
-	"github.com/lawrsp/pigo/pkg/generator"
-	"github.com/lawrsp/pigo/pkg/parser"
-	"github.com/lawrsp/pigo/pkg/printutil"
+	"github.com/lawrsp/pigo/generator/builder"
+	"github.com/lawrsp/pigo/generator"
+	"github.com/lawrsp/pigo/generator/parser"
+	"github.com/lawrsp/pigo/generator/printutil"
 	"github.com/lawrsp/stringstyles"
 )
 

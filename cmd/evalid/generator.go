@@ -7,9 +7,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/lawrsp/pigo/pkg/builder"
-	"github.com/lawrsp/pigo/pkg/generator"
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/builder"
+	"github.com/lawrsp/pigo/generator"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 type Config struct {

@@ -7,10 +7,10 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/lawrsp/pigo/pkg/builder"
-	"github.com/lawrsp/pigo/pkg/generator"
-	"github.com/lawrsp/pigo/pkg/parser"
-	"github.com/lawrsp/pigo/pkg/tagutil"
+	"github.com/lawrsp/pigo/generator/builder"
+	"github.com/lawrsp/pigo/generator"
+	"github.com/lawrsp/pigo/generator/parser"
+	"github.com/lawrsp/pigo/generator/tagutil"
 )
 
 type CustomAssign struct {

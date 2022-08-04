@@ -3,7 +3,7 @@ package genrpc
 import (
 	"fmt"
 
-	"github.com/lawrsp/pigo/pkg/configutil"
+	"github.com/lawrsp/pigo/generator/configutil"
 	"github.com/urfave/cli"
 )
 

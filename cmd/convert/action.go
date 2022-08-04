@@ -6,7 +6,7 @@ import (
 
 	"github.com/urfave/cli"
 
-	"github.com/lawrsp/pigo/pkg/configutil"
+	"github.com/lawrsp/pigo/generator/configutil"
 )
 
 var Usage = "convert one type to another"
