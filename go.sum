@@ -1,6 +1,8 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d h1:U+s90UTSYgptZMwQh2aRr3LuazLJIa+Pg3Kc1ylSYVY=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
+github.com/lawrsp/pigo/generator v1.0.2 h1:oipIY73wSLHW9c57LJsAjX4XgmwsOfLC0JrvoFeSXCI=
+github.com/lawrsp/pigo/generator v1.0.2/go.mod h1:x97C6+0DC+yHZVbKyf6x0DFsrQ2Q5fLgCXoD59Sa9qU=
 github.com/lawrsp/stringstyles v1.0.0 h1:IsmdmQWzieaFWEtqRTxMx3o31g1e6L/9W7yGsutNAvk=
 github.com/lawrsp/stringstyles v1.0.0/go.mod h1:GCn4dGXikTBXV1o+ntImrSY69S/brKKhiUd2kZ/TD2c=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

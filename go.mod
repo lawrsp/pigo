@@ -3,13 +3,11 @@ module github.com/lawrsp/pigo
 go 1.18
 
 require (
-	github.com/lawrsp/pigo/generator v0.0.0-00010101000000-000000000000
+	github.com/lawrsp/pigo/generator v1.0.2
 	github.com/lawrsp/stringstyles v1.0.0
 	github.com/urfave/cli v1.22.9
 	golang.org/x/tools v0.1.12
 )
-
-replace github.com/lawrsp/pigo/generator => ./generator
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
