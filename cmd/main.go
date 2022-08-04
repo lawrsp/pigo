@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/urfave/cli"
+
 	"github.com/lawrsp/pigo/cmd/checker"
 	"github.com/lawrsp/pigo/cmd/convert"
 	"github.com/lawrsp/pigo/cmd/evalid"
@@ -12,7 +14,6 @@ import (
 	"github.com/lawrsp/pigo/cmd/pfilter"
 	"github.com/lawrsp/pigo/cmd/setdb"
 	"github.com/lawrsp/pigo/cmd/setter"
-	"github.com/urfave/cli"
 )
 
 var version = "0.1.0"

@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lawrsp/pigo/generator/builder"
 	"github.com/lawrsp/pigo/generator"
+	"github.com/lawrsp/pigo/generator/builder"
 	"github.com/lawrsp/pigo/generator/parser"
 	"github.com/lawrsp/pigo/generator/printutil"
 	"github.com/lawrsp/stringstyles"
