@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"go/ast"
 
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 type Printer interface {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 var code = fmt.Sprintf(`

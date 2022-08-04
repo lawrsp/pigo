@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/lawrsp/pigo/pkg/printutil"
+	"github.com/lawrsp/pigo/generator/printutil"
 )
 
 func NewType(name string) Type {

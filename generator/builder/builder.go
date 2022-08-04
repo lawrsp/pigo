@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lawrsp/pigo/pkg/parser"
-	"github.com/lawrsp/pigo/pkg/printutil"
+	"github.com/lawrsp/pigo/generator/parser"
+	"github.com/lawrsp/pigo/generator/printutil"
 )
 
 type ScopeLevel int

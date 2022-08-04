@@ -6,7 +6,7 @@ import (
 	"go/token"
 	"testing"
 
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 func ExampleVariableDot() {

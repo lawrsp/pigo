@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/lawrsp/pigo/pkg/printutil"
+	"github.com/lawrsp/pigo/generator/printutil"
 )
 
 func expect(logger func(string, ...interface{}), a interface{}, b interface{}) {
@@ -164,8 +164,8 @@ func TestParsePackage(t *testing.T) {
 	code := `
 package parser
 
-import "github.com/lawrsp/pigo/pkgutils"
-import "github.com/lawrsp/pigo/pkgbuilder"
+import "github.com/lawrsp/pigo/generatorutils"
+import "github.com/lawrsp/pigo/generatorbuilder"
 import "strings"
 import "go/ast"
 `

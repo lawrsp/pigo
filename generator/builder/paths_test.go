@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 func expect(a interface{}, b interface{}, logger func(string, ...interface{})) {

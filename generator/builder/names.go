@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"strings"
 
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 //camel string, xx_yy to xxYy

@@ -5,7 +5,7 @@ import (
 	"go/token"
 	"log"
 
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 func testIgnores(fnt parser.Type, wanted []parser.Type) []int {

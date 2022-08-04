@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"log"
 
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 type StmtListBuilder interface {
@@ -44,7 +44,7 @@ func (b *StructAssignBuilder) TryAssign(srcV, dstV *Variable) bool {
 		err := fmt.Errorf("src == nil ? %v ; dst == nil ? %v", srcV == nil, dstV == nil)
 		panic(err)
 	}
-	if srcV.IsVisible() == false {
+	if !srcV.IsVisible() {
 		err := fmt.Errorf("src %s is not visible and not anonymous", srcV.Name())
 		panic(err)
 	}

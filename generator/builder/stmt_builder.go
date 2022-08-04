@@ -7,7 +7,7 @@ import (
 	"go/token"
 	"log"
 
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 type StmtBuilder interface {

@@ -5,7 +5,7 @@ import (
 	"go/token"
 	"log"
 
-	"github.com/lawrsp/pigo/pkg/printutil"
+	"github.com/lawrsp/pigo/generator/printutil"
 )
 
 func checkFuncDecl(decl ast.Decl, name string) *ast.FuncDecl {

@@ -3,7 +3,7 @@ package builder
 import (
 	"go/ast"
 
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 type VarGetter interface {

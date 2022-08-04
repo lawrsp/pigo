@@ -11,8 +11,8 @@ func TestTypeToType(t *testing.T) {
 	code := `
 package parser
 
-import "github.com/lawrsp/pigo/pkgutils"
-import "github.com/lawrsp/pigo/pkgbuilder"
+import "github.com/lawrsp/pigo/generatorutils"
+import "github.com/lawrsp/pigo/generatorbuilder"
 import "strings"
 import "go/ast"
 import "github.com/golang/protobuf/ptypes/timestamp"

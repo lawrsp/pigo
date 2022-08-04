@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/lawrsp/pigo/pkg/parser"
+	"github.com/lawrsp/pigo/generator/parser"
 )
 
 type Field struct {

@@ -4,7 +4,7 @@ import (
 	"go/ast"
 	"log"
 
-	"github.com/lawrsp/pigo/pkg/printutil"
+	"github.com/lawrsp/pigo/generator/printutil"
 )
 
 type OldFuncType struct {
