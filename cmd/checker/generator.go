@@ -526,6 +526,9 @@ func (g *Generator) Run(c *Config) {
 
 	bd := builder.NewFuncBuffer(file, c.Name)
 	bd.Printf("func (%s *%s)%s() error {\n", rName, c.Type, c.Name)
+	bd.Printf("  if %s == nil {\n", rName)
+	bd.Printf("     return nil\n")
+	bd.Printf("  }\n")
 	bd.Printf("  chk := checker.NewParamChecker()\n")
 
 	for _, srcFd := range srcSt.Fields {
