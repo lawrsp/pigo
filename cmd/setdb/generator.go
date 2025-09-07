@@ -1,12 +1,13 @@
 package setdb
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 	"strings"
 
-	"github.com/lawrsp/pigo/generator/builder"
 	"github.com/lawrsp/pigo/generator"
+	"github.com/lawrsp/pigo/generator/builder"
 	"github.com/lawrsp/pigo/generator/parser"
 	"github.com/lawrsp/stringstyles"
 )
@@ -52,7 +53,7 @@ func NewGenerator() *Generator {
 // 	g.buildCondition(p, conds, typeName)
 // }
 
-//condition
+// condition
 type Condition struct {
 	name    string
 	typ     parser.Type
@@ -60,6 +61,91 @@ type Condition struct {
 	operand string
 
 	// kind reflect.Kind
+}
+
+var quoteNames = map[string]bool{
+	"select":     true,
+	"order":      true,
+	"group":      true,
+	"table":      true,
+	"insert":     true,
+	"update":     true,
+	"delete":     true,
+	"where":      true,
+	"from":       true,
+	"join":       true,
+	"index":      true,
+	"key":        true,
+	"values":     true,
+	"trigger":    true,
+	"procedure":  true,
+	"function":   true,
+	"database":   true,
+	"schema":     true,
+	"user":       true,
+	"view":       true,
+	"union":      true,
+	"all":        true,
+	"distinct":   true,
+	"as":         true,
+	"and":        true,
+	"or":         true,
+	"not":        true,
+	"null":       true,
+	"like":       true,
+	"in":         true,
+	"between":    true,
+	"exists":     true,
+	"case":       true,
+	"when":       true,
+	"then":       true,
+	"else":       true,
+	"end":        true,
+	"true":       true,
+	"false":      true,
+	"is":         true,
+	"char":       true,
+	"varchar":    true,
+	"int":        true,
+	"text":       true,
+	"date":       true,
+	"time":       true,
+	"timestamp":  true,
+	"primary":    true,
+	"foreign":    true,
+	"references": true,
+	"create":     true,
+	"alter":      true,
+	"drop":       true,
+	"grant":      true,
+	"revoke":     true,
+	"commit":     true,
+	"rollback":   true,
+	// 可以继续添加更多关键字...
+}
+
+func (c *Condition) rowNameNeedQuote() bool {
+	if first := c.rowname[0]; first >= '0' && first <= '9' {
+		return true
+	}
+
+	if _, ok := quoteNames[c.rowname]; ok {
+		return true
+	}
+
+	return false
+}
+
+func (c *Condition) SQLRowName() string {
+	if c.rowNameNeedQuote() {
+		return fmt.Sprintf("`%s`", c.rowname)
+	}
+
+	return c.rowname
+}
+
+func (c *Condition) Operand() string {
+	return c.operand
 }
 
 func newCondition(name string, t parser.Type) *Condition {
@@ -148,18 +234,18 @@ func (g *Generator) buildOnePtrClause(p builder.Printer, cnd *Condition) {
 	if cnd.operand == "call" {
 		p.Printf("  odb = p.%s.%s(odb) \n", cnd.name, cnd.rowname)
 	} else if cnd.operand == "IS NOT" {
-		p.Printf("  odb = odb.Where(\"(%s = ?) %s TRUE\", *p.%s)\n", cnd.rowname, cnd.operand, cnd.name)
+		p.Printf("  odb = odb.Where(\"(%s = ?) %s TRUE\", *p.%s)\n", cnd.SQLRowName(), cnd.operand, cnd.name)
 	} else if cnd.operand == "LIKE" {
-		p.Printf("  odb = odb.Where(\"%s %s ?\", fmt.Sprintf(\"%%%%%%s%%%%\", *p.%s))\n", cnd.rowname, cnd.operand, cnd.name)
+		p.Printf("  odb = odb.Where(\"%s %s ?\", fmt.Sprintf(\"%%%%%%s%%%%\", *p.%s))\n", cnd.SQLRowName(), cnd.operand, cnd.name)
 	} else {
-		p.Printf("  odb = odb.Where(\"%s %s ?\", *p.%s)\n", cnd.rowname, cnd.operand, cnd.name)
+		p.Printf("  odb = odb.Where(\"%s %s ?\", *p.%s)\n", cnd.SQLRowName(), cnd.operand, cnd.name)
 	}
 	p.Printf("}\n")
 }
 
 func (g *Generator) buildOneSliceClause(p builder.Printer, cnd *Condition) {
 	p.Printf("if len(p.%[1]s) > 0 {\n", cnd.name)
-	p.Printf("  odb = odb.Where(\"%s %s (?)\", p.%s)\n", cnd.rowname, cnd.operand, cnd.name)
+	p.Printf("  odb = odb.Where(\"%s %s (?)\", p.%s)\n", cnd.SQLRowName(), cnd.operand, cnd.name)
 	p.Printf("}\n")
 }
 
@@ -167,16 +253,16 @@ func (g *Generator) buildOneDefaultClause(p builder.Printer, cnd *Condition) {
 	if cnd.operand == "call" {
 		p.Printf("  odb = p.%s.%s(odb) \n", cnd.name, cnd.rowname)
 	} else if cnd.operand == "IS NOT" {
-		p.Printf("  odb = odb.Where(\"(%s = ?) %s TRUE\", p.%s)\n", cnd.rowname, cnd.operand, cnd.name)
+		p.Printf("  odb = odb.Where(\"(%s = ?) %s TRUE\", p.%s)\n", cnd.SQLRowName(), cnd.operand, cnd.name)
 	} else if cnd.operand == "LIKE" {
-		p.Printf("odb = odb.Where(\"%s %s ?\", fmt.Sprintf(\"%%%%%%s%%%%\", p.%s))\n", cnd.rowname, cnd.operand, cnd.name)
+		p.Printf("odb = odb.Where(\"%s %s ?\", fmt.Sprintf(\"%%%%%%s%%%%\", p.%s))\n", cnd.SQLRowName(), cnd.operand, cnd.name)
 	} else {
-		p.Printf("odb = odb.Where(\"%s %s ?\", p.%s)\n", cnd.rowname, cnd.operand, cnd.name)
+		p.Printf("odb = odb.Where(\"%s %s ?\", p.%s)\n", cnd.SQLRowName(), cnd.operand, cnd.name)
 	}
 }
 
 func (g *Generator) buildOneNilClause(p builder.Printer, cnd *Condition) {
-	p.Printf("odb = odb.Where(\"%s %s NULL\")\n", cnd.rowname, cnd.operand)
+	p.Printf("odb = odb.Where(\"%s %s NULL\")\n", cnd.SQLRowName(), cnd.operand)
 }
 
 func (g *Generator) PrepareTask(conf *Config) {
