@@ -38,6 +38,10 @@ var Flags = []cli.Flag{
 		Name:  "import,i",
 		Usage: "the requried imports",
 	},
+	cli.StringSliceFlag{
+		Name:  "join-as,j",
+		Usage: "with join prefix",
+	},
 }
 
 func Action(c *cli.Context) error {
@@ -50,6 +54,8 @@ func Action(c *cli.Context) error {
 
 	output := c.String("output")
 	input := c.Args().Get(0)
+
+	joinAs := c.String("join-as")
 
 	imports := c.StringSlice("import")
 	configImports := map[string]string{}
@@ -73,6 +79,7 @@ func Action(c *cli.Context) error {
 		Input:   input,
 		DBType:  c.String("db"),
 		Imports: configImports,
+		JoinAs:  joinAs,
 	}
 
 	g := NewGenerator()

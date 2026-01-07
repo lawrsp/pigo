@@ -20,6 +20,7 @@ type Config struct {
 	Type    string
 	DBType  string
 	Imports map[string]string
+	JoinAs  string
 }
 
 // Generator holds the state of the analysis. Primarily used to buffer
@@ -55,6 +56,7 @@ func NewGenerator() *Generator {
 
 // condition
 type Condition struct {
+	Config  *Config
 	name    string
 	typ     parser.Type
 	rowname string
@@ -137,19 +139,23 @@ func (c *Condition) rowNameNeedQuote() bool {
 }
 
 func (c *Condition) SQLRowName() string {
+	rowName := c.rowname
 	if c.rowNameNeedQuote() {
-		return fmt.Sprintf("`%s`", c.rowname)
+		rowName = fmt.Sprintf("`%s`", c.rowname)
+	}
+	if c.Config.JoinAs != "" {
+		return fmt.Sprintf("%s.%s", c.Config.JoinAs, rowName)
 	}
 
-	return c.rowname
+	return rowName
 }
 
 func (c *Condition) Operand() string {
 	return c.operand
 }
 
-func newCondition(name string, t parser.Type) *Condition {
-	return &Condition{name: name, typ: t}
+func newCondition(c *Config, name string, t parser.Type) *Condition {
+	return &Condition{Config: c, name: name, typ: t}
 }
 
 func (c *Condition) InitFromTag(tag string) bool {
@@ -280,7 +286,7 @@ func (g *Generator) PrepareTask(conf *Config) {
 			vtag = reflect.StructTag(tag).Get(conf.TagName)
 		}
 
-		cnd := newCondition(name, fd.Field.Type)
+		cnd := newCondition(conf, name, fd.Field.Type)
 		if ok := cnd.InitFromTag(vtag); !ok {
 			continue
 		}
