@@ -150,6 +150,12 @@ func (c *Condition) SQLRowName() string {
 	return rowName
 }
 
+func (c *Condition) CamelName() string {
+	rowName := stringstyles.CamelCase(c.rowname)
+
+	return rowName
+}
+
 func (c *Condition) Operand() string {
 	return c.operand
 }
@@ -221,13 +227,14 @@ func (c *Condition) InitFromTag(tag string) bool {
 	}
 
 	c.rowname = rowname
-	if operand == "isnull" {
+	switch operand {
+	case "isnull":
 		c.operand = "IS"
 		c.typ = nil
-	} else if operand == "notnull" {
+	case "notnull":
 		c.operand = "IS NOT"
 		c.typ = nil
-	} else {
+	default:
 		c.operand = operand
 	}
 
@@ -238,11 +245,23 @@ func (c *Condition) InitFromTag(tag string) bool {
 func (g *Generator) buildOnePtrClause(p builder.Printer, cnd *Condition) {
 	p.Printf("if p.%s != nil {\n", cnd.name)
 	if cnd.operand == "call" {
+		// "call"
 		p.Printf("  odb = p.%s.%s(odb) \n", cnd.name, cnd.rowname)
 	} else if cnd.operand == "IS NOT" {
+		// IS NOT
 		p.Printf("  odb = odb.Where(\"(%s = ?) %s TRUE\", *p.%s)\n", cnd.SQLRowName(), cnd.operand, cnd.name)
 	} else if cnd.operand == "LIKE" {
-		p.Printf("  odb = odb.Where(\"%s %s ?\", fmt.Sprintf(\"%%%%%%s%%%%\", *p.%s))\n", cnd.SQLRowName(), cnd.operand, cnd.name)
+		// LIKE:
+		// nameSplitedList := strings.Split(*p.Name, " ")
+		// for _, name := range nameSplitedList {
+		//   odb = odb.Where("name LIKE ?", fmt.Sprintf("%%%%%s%%%%", name))
+		// }
+		rowName := cnd.CamelName()
+		listName := fmt.Sprintf("%sSplitedList", rowName)
+		p.Printf("  %s := strings.Split(\"*p.%s\", \" \")\n", listName, cnd.name)
+		p.Printf("  for _, %s := range %s {\n", rowName, listName)
+		p.Printf("     odb = odb.Where(\"%s LIKE ?\", fmt.Sprintf(\"%%%%%%s%%%%\", %s))\n", cnd.SQLRowName(), cnd.name)
+		p.Printf("  }\n")
 	} else {
 		p.Printf("  odb = odb.Where(\"%s %s ?\", *p.%s)\n", cnd.SQLRowName(), cnd.operand, cnd.name)
 	}
