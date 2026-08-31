@@ -8,7 +8,7 @@ There's always some repetitive, simple code you have to write, that is very anno
 
 e.g. when you must assign structs, and you donn't want use reflect.
 
-When the go generator tool comes up, I write pigo, let the generator write some simple code even a pig can write.
+When the go generator tool comes up, I write pigo, let the generator write some simple code.
 
 That is why it is called `pigo`: **pig-go**
 
