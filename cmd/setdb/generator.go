@@ -271,7 +271,7 @@ func (g *Generator) buildOnePtrClause(p builder.Printer, cnd *Condition) {
 		p.Printf("      odb = odb.Where(\"%s LIKE ?\", \"%%\"+%s+\"%%\")\n", rowName, rowName)
 		p.Printf("    }\n")
 		p.Printf("  } else {\n")
-		p.Printf("    for %s := range strings.SplitSeq(\"*p.%s\", \" \") {\n", rowName, cnd.name)
+		p.Printf("    for %s := range strings.SplitSeq(*p.%s, \" \") {\n", rowName, cnd.name)
 		p.Printf("      if len(%s) > 1 {\n", rowName)
 		p.Printf("        odb = odb.Where(\"%s LIKE ?\", \"%%\"+%s+\"%%\")\n", cnd.SQLRowName(), rowName)
 		p.Printf("      }\n")
