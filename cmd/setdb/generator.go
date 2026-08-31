@@ -254,27 +254,24 @@ func (g *Generator) buildOnePtrClause(p builder.Printer, cnd *Condition) {
 		// LIKE:
 		// if strings.HasPrefix(*p.Name, "\"") && strings.HasSuffix(*p.Name, "\"") {
 		// 	if len(*p.Name) > 2 {
-		// 		name := *p.Name[1, len(*p.Name) -1]
+		// 		name := (*p.Name)[1:len(*p.Name) -1]
 		// 		odb = odb.Where("name LIKE ?", "%"+name+"%" )
 		// 	}
 		// } else {
-		//   nameSplitedList := strings.Split(*p.Name, " ")
-		//   for _, name := range nameSplitedList {
+		//   for name := range strings.SplitSeq(*p.Name, " ") {
 		//     if len(name) > 1 {
 		//       odb = odb.Where("name LIKE ?", "%"+name+"%")
 		//     }
 		//   }
 		// }
 		rowName := cnd.CamelName()
-		listName := fmt.Sprintf("%sSplitedList", rowName)
 		p.Printf("  if strings.HasPrefix(*p.%s, \"\\\"\") && strings.HasSuffix(*p.%s, \"\\\"\") {\n", cnd.name, cnd.name)
 		p.Printf("    if len(*p.%s) > 2 {\n", cnd.name)
-		p.Printf("      %s := *p.%s[1, len(*p.%s) -1]\n", rowName, cnd.name, cnd.name)
+		p.Printf("      %s := (*p.%s)[1:len(*p.%s) -1]\n", rowName, cnd.name, cnd.name)
 		p.Printf("      odb = odb.Where(\"%s LIKE ?\", \"%%\"+%s+\"%%\")\n", rowName, rowName)
 		p.Printf("    }\n")
 		p.Printf("  } else {\n")
-		p.Printf("    %s := strings.Split(\"*p.%s\", \" \")\n", listName, cnd.name)
-		p.Printf("    for _, %s := range %s {\n", rowName, listName)
+		p.Printf("    for %s := range strings.SplitSeq(\"*p.%s\", \" \") {\n", rowName, cnd.name)
 		p.Printf("      if len(%s) > 1 {\n", rowName)
 		p.Printf("        odb = odb.Where(\"%s LIKE ?\", \"%%\"+%s+\"%%\")\n", cnd.SQLRowName(), rowName)
 		p.Printf("      }\n")
