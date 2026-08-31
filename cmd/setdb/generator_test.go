@@ -3,6 +3,7 @@ package setdb
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -25,5 +26,10 @@ func TestBuildOnePtrClause(t *testing.T) {
 	g := NewGenerator()
 
 	g.buildOnePtrClause(stdoutPrinter{}, &c)
+
+	x := " 1 2 3     "
+	for _, xi := range strings.Split(x, " ") {
+		fmt.Printf("x%sx", xi)
+	}
 
 }
