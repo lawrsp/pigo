@@ -16,7 +16,7 @@ import (
 	"github.com/lawrsp/pigo/cmd/setter"
 )
 
-var version = "1.0.19"
+var version = "1.0.20"
 
 func main() {
 
