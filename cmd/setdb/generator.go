@@ -268,7 +268,7 @@ func (g *Generator) buildOnePtrClause(p builder.Printer, cnd *Condition) {
 		p.Printf("  if strings.HasPrefix(*p.%s, \"\\\"\") && strings.HasSuffix(*p.%s, \"\\\"\") {\n", cnd.name, cnd.name)
 		p.Printf("    if len(*p.%s) > 2 {\n", cnd.name)
 		p.Printf("      %s := (*p.%s)[1:len(*p.%s) -1]\n", rowName, cnd.name, cnd.name)
-		p.Printf("      odb = odb.Where(\"%s LIKE ?\", \"%%\"+%s+\"%%\")\n", rowName, rowName)
+		p.Printf("      odb = odb.Where(\"%s LIKE ?\", \"%%\"+%s+\"%%\")\n", cnd.SQLRowName(), rowName)
 		p.Printf("    }\n")
 		p.Printf("  } else {\n")
 		p.Printf("    for %s := range strings.SplitSeq(*p.%s, \" \") {\n", rowName, cnd.name)
